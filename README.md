@@ -1,35 +1,35 @@
-# Ghhggfpackage config
+package database
 
 import (
+	"fmt"
 	"log"
-	"os"
 
-	"github.com/joho/godotenv"
+	"library-management/config"
+	"library-management/internal/models"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-// Config holds application configurations
-type Config struct {
-	DbHost string
-	DbPort string
-	DbUser string
-	DbPass string
-	DbName string
-	ServerPort string
-}
+// ConnectPostgres initializes PostgreSQL connection
+func ConnectPostgres(cfg *config.Config) (*gorm.DB, error) {
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		cfg.DbHost, cfg.DbUser, cfg.DbPass, cfg.DbName, cfg.DbPort,
+	)
 
-// LoadConfig reads configurations from .env
-func LoadConfig() *Config {
-	err := godotenv.Load()
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		return nil, err
 	}
 
-	return &Config{
-		DbHost: os.Getenv("DB_HOST"),
-		DbPort: os.Getenv("DB_PORT"),
-		DbUser: os.Getenv("DB_USER"),
-		DbPass: os.Getenv("DB_PASS"),
-		DbName: os.Getenv("DB_NAME"),
-		ServerPort: os.Getenv("SERVER_PORT"),
+	log.Println("Connected to PostgreSQL successfully!")
+
+	// Auto-migrate tables
+	if err := db.AutoMigrate(&models.Library{}, &models.Book{}, &models.User{}, &models.Issue{}); err != nil {
+		return nil, err
 	}
+
+	return db, nil
 }
+
