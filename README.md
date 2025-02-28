@@ -1,4 +1,85 @@
+Final Project Structure
 
+library-management/
+│── config/              # Database configuration
+│── models/              # Database models
+│── controllers/         # Business logic
+│── routes/              # API routes
+│── middlewares/         # Authentication & authorization
+│── utils/               # Helper functions
+│── .env                 # Environment variables
+│── schema.sql           # SQL file for database setup ✅
+│── main.go              # Entry point of the application
+│── go.mod               # Go module file
+│── go.sum               # Go dependencies
+📌 1. .env File for Secure Database Configuration
+
+Create a .env file in the root directory:
+
+.env
+DB_HOST=localhost
+DB_USER=youruser
+DB_PASSWORD=yourpassword
+DB_NAME=library
+DB_PORT=5432
+SSL_MODE=disable
+📌 2. Database Configuration
+
+This will load the environment variables and connect to PostgreSQL.
+
+config/db.go
+package config
+
+import (
+    "database/sql"
+    "fmt"
+    "log"
+    "os"
+
+    "github.com/joho/godotenv"
+    _ "github.com/lib/pq"
+)
+
+var DB *sql.DB
+
+func LoadEnv() {
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+}
+
+func ConnectDB() {
+    LoadEnv()
+
+    dbHost := os.Getenv("DB_HOST")
+    dbUser := os.Getenv("DB_USER")
+    dbPassword := os.Getenv("DB_PASSWORD")
+    dbName := os.Getenv("DB_NAME")
+    dbPort := os.Getenv("DB_PORT")
+    sslMode := os.Getenv("SSL_MODE")
+
+    connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+        dbHost, dbUser, dbPassword, dbName, dbPort, sslMode)
+
+    var err error
+    DB, err = sql.Open("postgres", connStr)
+    if err != nil {
+        log.Fatal("Failed to connect to database:", err)
+    }
+
+    err = DB.Ping()
+    if err != nil {
+        log.Fatal("Database not reachable:", err)
+    }
+
+    fmt.Println("Database connected successfully!")
+}
+📌 3. Database Schema
+
+This SQL script creates all required tables.
+
+schema.sql
 CREATE TABLE library (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL
@@ -44,104 +125,13 @@ CREATE TABLE issueregistry (
     returndate TIMESTAMP,
     returnapproverid INT REFERENCES users(id)
 );
+📌 4. API Controllers
 
+Library Controller (controllers/library_controller.go)
 
-package config
-
-import (
-    "database/sql"
-    "fmt"
-    "log"
-
-    _ "github.com/lib/pq"
-)
-
-var DB *sql.DB
-
-func ConnectDB() {
-    var err error
-    connStr := "host=localhost user=youruser password=yourpassword dbname=library sslmode=disable"
-    
-    DB, err = sql.Open("postgres", connStr)
-    if err != nil {
-        log.Fatal("Failed to connect to database:", err)
-    }
-
-    err = DB.Ping()
-    if err != nil {
-        log.Fatal("Database not reachable:", err)
-    }
-
-    fmt.Println("Database connected successfully!")
-}
-
-
-
-3. Models
-
-models/library.go
-package models
-
-type Library struct {
-    ID   int
-    Name string
-}
-models/user.go
-package models
-
-type User struct {
-    ID            int
-    Name          string
-    Email         string
-    ContactNumber string
-    Role          string
-    LibraryID     int
-}
-models/book.go
-package models
-
-type Book struct {
-    ISBN           string
-    Title          string
-    Authors        string
-    Publisher      string
-    Version        string
-    TotalCopies    int
-    AvailableCopies int
-}
-models/request.go
-package models
-
-type RequestEvent struct {
-    ReqID        int
-    BookID       string
-    ReaderID     int
-    RequestDate  string
-    ApprovalDate string
-    ApproverID   int
-    RequestType  string
-}
-models/issue.go
-package models
-
-type IssueRegistry struct {
-    IssueID          int
-    ISBN            string
-    ReaderID        int
-    IssueApproverID int
-    IssueStatus     string
-    IssueDate       string
-    ExpectedReturnDate string
-    ReturnDate      string
-    ReturnApproverID int
-}
-📌 4. Controllers
-
-controllers/library_controller.go
 package controllers
 
 import (
-    "database/sql"
     "encoding/json"
     "library-management/config"
     "library-management/models"
@@ -177,11 +167,11 @@ func CreateLibrary(w http.ResponseWriter, r *http.Request) {
 
     json.NewEncoder(w).Encode(library)
 }
-controllers/admin_controller.go
+Book Controller (controllers/book_controller.go)
+
 package controllers
 
 import (
-    "database/sql"
     "encoding/json"
     "library-management/config"
     "library-management/models"
@@ -207,48 +197,48 @@ func AddBook(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(book)
 }
-controllers/reader_controller.go
-package controllers
+📌 5. API Routes
+
+routes/routes.go
+package routes
 
 import (
-    "database/sql"
-    "encoding/json"
+    "library-management/controllers"
+    "net/http"
+
+    "github.com/gorilla/mux"
+)
+
+func SetupRoutes() *mux.Router {
+    router := mux.NewRouter()
+
+    router.HandleFunc("/libraries", controllers.CreateLibrary).Methods("POST")
+    router.HandleFunc("/books", controllers.AddBook).Methods("POST")
+
+    return router
+}
+📌 6. Main File
+
+main.go
+package main
+
+import (
+    "fmt"
     "library-management/config"
-    "library-management/models"
+    "library-management/routes"
     "net/http"
 )
 
-func SearchBook(w http.ResponseWriter, r *http.Request) {
-    title := r.URL.Query().Get("title")
+func main() {
+    config.ConnectDB()
+    router := routes.SetupRoutes()
 
-    query := `SELECT isbn, title, authors, publisher, version, totalcopies, availablecopies FROM bookinventory WHERE title ILIKE $1`
-    rows, err := config.DB.Query(query, "%"+title+"%")
-    if err != nil {
-        http.Error(w, "Error fetching book", http.StatusInternalServerError)
-        return
-    }
-    defer rows.Close()
-
-    var books []models.Book
-    for rows.Next() {
-        var book models.Book
-        err := rows.Scan(&book.ISBN, &book.Title, &book.Authors, &book.Publisher, &book.Version, &book.TotalCopies, &book.AvailableCopies)
-        if err != nil {
-            http.Error(w, "Error scanning book", http.StatusInternalServerError)
-            return
-        }
-        books = append(books, book)
-    }
-
-    json.NewEncoder(w).Encode(books)
+    fmt.Println("Server is running on port 8080...")
+    http.ListenAndServe(":8080", router)
 }
+✅ Final Steps
 
-
-
-
-
-
-
-
-
-
+Run Database Migration
+psql -U youruser -d library -f schema.sql
+Start the API
+go run main.go
