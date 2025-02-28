@@ -242,3 +242,82 @@ Run Database Migration
 psql -U youruser -d library -f schema.sql
 Start the API
 go run main.go
+
+
+
+1️⃣ models/library.go
+Defines the Library struct.
+
+package models
+
+type Library struct {
+    ID   int    `json:"id"`
+    Name string `json:"name"`
+}
+2️⃣ models/user.go
+Defines the User struct with role-based access.
+
+package models
+
+type User struct {
+    ID           int    `json:"id"`
+    Name         string `json:"name"`
+    Email        string `json:"email"`
+    Contact      string `json:"contactnumber"`
+    Role         string `json:"role"`  // "Owner", "Admin", "Reader"
+    LibraryID    int    `json:"libid"`
+}
+3️⃣ models/book.go
+Defines the Book struct.
+
+package models
+
+type Book struct {
+    ISBN            string `json:"isbn"`
+    Title           string `json:"title"`
+    Authors         string `json:"authors"`
+    Publisher       string `json:"publisher"`
+    Version         string `json:"version"`
+    TotalCopies     int    `json:"totalcopies"`
+    AvailableCopies int    `json:"availablecopies"`
+}
+4️⃣ models/request_event.go
+Defines the RequestEvent struct.
+
+package models
+
+import "time"
+
+type RequestEvent struct {
+    ReqID        int       `json:"reqid"`
+    BookID       string    `json:"bookid"`
+    ReaderID     int       `json:"readerid"`
+    RequestDate  time.Time `json:"requestdate"`
+    ApprovalDate *time.Time `json:"approvaldate,omitempty"`
+    ApproverID   *int      `json:"approverid,omitempty"`
+    RequestType  string    `json:"requesttype"`  // "Issue" or "Return"
+}
+5️⃣ models/issue_registry.go
+Defines the IssueRegistry struct.
+
+package models
+
+import "time"
+
+type IssueRegistry struct {
+    IssueID          int       `json:"issueid"`
+    ISBN            string    `json:"isbn"`
+    ReaderID        int       `json:"readerid"`
+    IssueApproverID int       `json:"issueapproverid"`
+    IssueStatus     string    `json:"issuestatus"`  // "Issued" or "Returned"
+    IssueDate       time.Time `json:"issuedate"`
+    ExpectedReturn  *time.Time `json:"expectedreturndate,omitempty"`
+    ReturnDate      *time.Time `json:"returndate,omitempty"`
+    ReturnApprover  *int      `json:"returnapproverid,omitempty"`
+}
+📌 How These Models Are Used
+
+These models are now used in controllers instead of defining structs inside each function.
+When inserting or fetching data from PostgreSQL, the controllers will use these models for cleaner code.
+
+
