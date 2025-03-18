@@ -1,0 +1,95 @@
+import React from "react";
+import "./AboutUs.scss";
+
+const AboutUs = () => {
+  return (
+    <div className="about-us-container">
+      <h1>About Us</h1>
+      <p>
+        Welcome to our Library Management System. We are committed to providing an efficient 
+        and user-friendly platform for managing books, memberships, and library resources. 
+        Our goal is to enhance the experience of readers, librarians, and administrators 
+        by offering a seamless system for borrowing and tracking books.
+      </p>
+    </div>
+  );
+};
+
+export default AboutUs;
+
+import React from "react";
+import "./TermsAndConditions.scss";
+
+const TermsAndConditions = () => {
+  return (
+    <div className="terms-container">
+      <h1>Terms and Conditions</h1>
+      <p>By using our Library Management System, you agree to the following terms and conditions:</p>
+      <ul>
+        <li>All books must be returned within the due date.</li>
+        <li>Late returns may incur a penalty.</li>
+        <li>Library members must maintain the books in good condition.</li>
+        <li>Any damage or loss of books must be reported immediately.</li>
+        <li>The library reserves the right to suspend or terminate access for violations.</li>
+      </ul>
+    </div>
+  );
+};
+
+export default TermsAndConditions;
+
+.about-us-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    color: #0056b3;
+    font-size: 24px;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+
+
+.terms-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    color: #d9534f;
+    font-size: 24px;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  ul {
+    padding-left: 20px;
+
+    li {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+
+
