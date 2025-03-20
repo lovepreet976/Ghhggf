@@ -1,0 +1,314 @@
+/* Sidebar container */
+.sidebar {
+  position: fixed;
+  top: 60px; /* Ensures it's connected to the navbar */
+  left: 0;
+  width: 250px;
+  height: calc(100vh - 60px);
+  background-color: #333;
+  color: white;
+  padding-top: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  z-index: 10; /* Ensures it remains above content */
+}
+
+/* Collapsible Sidebar */
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle {
+  position: absolute;
+
+  top: 15px;
+  left: 260px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: white;
+  display: none;
+}
+
+/* Title styling */
+.sidebar-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+/* Sidebar links */
+.sidebar-links {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar-links li {
+  margin-bottom: 20px;
+}
+
+.sidebar-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 10px 15px;
+  display: block;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-link:hover {
+  background-color: #6d1aa5;
+}
+
+.sidebar-link:active {
+  background-color: #45a049;
+}
+
+/* Logout button */
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.logout-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+}
+
+
+
+
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./Sidebar.scss";
+
+const SidebarAdmin = () => {
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    sessionStorage.clear();
+    document.cookie = "userToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+    navigate("/");
+  };
+
+  return (
+    <>
+      {/* Sidebar Toggle Button */}
+      <button className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
+        ☰
+      </button>
+
+      <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
+        <h3 className="sidebar-title">Admin Portal</h3>
+        <ul className="sidebar-links">
+          <li>
+            <Link to="/Admin/AdminDetails" className="sidebar-link">Admin Details</Link>
+          </li>
+          <li>
+            <Link to="/Admin/AdminListRequests" className="sidebar-link">List Requests</Link>
+          </li>
+          <li>
+            <Link to="/Admin/AdminAD" className="sidebar-link">Approve/Disapprove Request</Link>
+          </li>
+          <li>
+            <Link to="/Admin/AdminAddBook" className="sidebar-link">Add New Book</Link>
+          </li>
+          <li>
+            <Link to="/Admin/AdminUpdateBook" className="sidebar-link">Update Book</Link>
+          </li>
+          <li>
+            <Link to="/Admin/AdminRemoveBook" className="sidebar-link">Remove Book</Link>
+          </li>
+          <li>
+            <Link to="/Admin/AdminIssue" className="sidebar-link">Issue Book</Link>
+          </li>
+          <li>
+            <button onClick={handleLogout} className="sidebar-link logout-btn">Logout</button>
+          </li>
+        </ul>
+      </div>
+    </>
+  );
+};
+
+export default SidebarAdmin;
+
+
+
+
+
+
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Navbar.scss";
+
+const Navbar = ({ toggleSidebar }) => {
+  return (
+    <nav className="navbar">
+      {/* Sidebar Toggle Button for Mobile */}
+      <button className="sidebar-toggle" onClick={toggleSidebar}>
+        ☰
+      </button>
+
+      <div className="site-info">
+        <div className="vertical-line"></div>
+        <div className="site-name">
+          <h4>Library Management System</h4>
+        </div>
+      </div>
+
+      <div className="page-sections">
+        <div className="page-section">
+          <Link to="/">Home</Link>
+        </div>
+        <div className="page-section">
+          <Link to="/ListLibraries">Libraries</Link>
+        </div>
+        <div className="page-section">
+          <Link to="/AboutUs">About Us</Link>
+        </div>
+        <div className="page-section">
+          <Link to="/TnC">T&C</Link>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+
+
+
+
+
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+nav {
+  width: 100%;
+  height: 60px;
+  background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0 20px;
+}
+
+.site-info {
+  display: flex;
+  align-items: center;
+}
+
+.vertical-line {
+  width: 0;
+  border-right: 3px solid red;
+  height: 30px;
+}
+
+.site-name h4 {
+  letter-spacing: 0.2rem;
+  font-weight: 400;
+  font-size: calc(0.09rem + 1vw);
+  margin-left: 10px;
+}
+
+/* Navbar links */
+.page-sections {
+  display: flex;
+  gap: 2rem;
+}
+
+.page-section a {
+  color: white;
+  text-decoration: none;
+  font-size: calc(0.09rem + 1vw);
+}
+
+.page-section a:hover {
+  border-bottom: 3px solid red;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .page-sections {
+    display: none; /* Hide navbar links on mobile */
+  }
+}
+
+
+
+
+
+import React, { useState } from "react";
+import Navbar from "./Navbar";
+import SidebarAdmin from "./SidebarAdmin";
+
+const App = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  return (
+    <>
+      <Navbar toggleSidebar={toggleSidebar} />
+      <SidebarAdmin isOpen={isSidebarOpen} />
+    </>
+  );
+};
+
+export default App;
+
+
+
+
+
+
