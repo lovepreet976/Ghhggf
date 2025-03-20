@@ -1,0 +1,103 @@
+.admin-issue-container {
+    display: flex;
+    justify-content: justify; // Center the content horizontally
+   
+  
+    .content {
+      width: 85%; // Increase the width of the content area for more space
+      max-width: 1400px; // Max width for large screens to make it wider
+      padding: 40px; // Add extra padding to make it feel spacious
+      margin-top: 40px; // Add more space from the top to move the content further down
+      background-color: #ffffff; // White background for the form container
+      border-radius: 12px; // Slightly more rounded corners for a soft look
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1); // Subtle shadow with a larger radius for depth
+      position: relative; // To allow potential positioning of elements inside
+  
+      // Make sure the content container scales well on smaller screens
+      @media (max-width: 768px) {
+        width: 95%; // Make the content container a bit narrower on smaller screens
+        padding: 25px; // Adjust padding on smaller screens
+      }
+    }
+  
+    h2 {
+      font-size: 24px; // Slightly larger text size for the title
+      font-weight: 600; // Bold title for emphasis
+      color: #333;
+      margin-bottom: 30px; // Spacing below the title
+      text-align: center; // Center the title
+      font-family: 'Arial', sans-serif; // A clean, modern font
+    }
+  
+    .form-group {
+      margin-bottom: 25px; // Larger space between form fields
+    }
+  
+    label {
+      font-size: 18px; // Slightly larger label font size
+      font-weight: bold;
+      color: #333;
+      display: block; // Ensure labels are on top of inputs
+      margin-bottom: 10px; // Space below label
+      font-family: 'Arial', sans-serif; // Make labels a bit more readable
+    }
+  
+    input {
+      width: 100%; // Full width of the form field
+      padding: 15px; // Increase padding for inputs to make them more comfortable to interact with
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px; // Round the input corners more
+      font-size: 16px; // Larger font size for better readability
+      font-family: 'Arial', sans-serif; // Make text more consistent across the page
+      box-sizing: border-box; // Prevent padding from overflowing
+  
+      &:focus {
+        border-color: #007bff; // Highlight border when focused
+        outline: none; // Remove default outline
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); // Add a soft blue glow around inputs
+      }
+    }
+  
+    .iss-btn {
+      background-color: #007bff; // Primary blue button
+      color: white;
+      padding: 15px 25px; // Increased padding for a more clickable button
+      border: none;
+      border-radius: 8px; // Rounded button corners
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.2s ease-in-out; // Smooth transitions on hover
+      width: 100%; // Make the button fill the width of the form
+  
+      &:hover {
+        background-color: #0056b3; // Darker blue when hovered
+        transform: scale(1.05); // Slight zoom effect on hover for a more interactive feel
+      }
+  
+      &:disabled {
+        background-color: #ddd; // Light grey if disabled
+        cursor: not-allowed; // Change cursor to show it's disabled
+      }
+    }
+  
+    .error-message {
+      color: red;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center; // Center the error message
+      font-family: 'Arial', sans-serif;
+    }
+  
+    .success-message {
+      color: green;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center; // Center the success message
+      font-family: 'Arial', sans-serif;
+    }
+  }
+  
