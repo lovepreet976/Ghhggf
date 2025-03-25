@@ -1,6 +1,7 @@
 import React from "react";
 import "./AboutUs.scss";
-
+CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1)
+wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)/chromedriver_linux64.zip
 const AboutUs = () => {
   return (
     <div className="about-us-container">
